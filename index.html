@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saucy Music Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // Define theme colors
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#000000', // Black
+                        secondary: '#D6001C', // Red
+                        accent: '#FFFFFF', // White
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .section-padding {
+                @apply py-16 px-4 md:px-8 lg:px-16;
+            }
+            .filter-btn-active {
+                @apply bg-secondary text-accent;
+            }
+            /* ✅ NEW: Subscribe Button Style */
+            .subscribe-btn {
+                @apply bg-secondary hover:bg-secondary/90 text-accent font-semibold px-6 py-3 rounded-md transition-all transform hover:scale-105 shadow-lg hover:shadow-secondary/30;
+            }
+            .subscribe-btn-outline {
+                @apply border-2 border-secondary text-secondary hover:bg-secondary/10 font-semibold px-6 py-3 rounded-md transition-all;
+            }
+        }
+    </style>
+</head>
+<body class="bg-primary text-accent font-sans">
+
+    <!-- ✅ NEWSLETTER POPUP -->
+    <div id="newsletterPopup" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center hidden">
+        <div class="bg-primary border-2 border-secondary rounded-lg p-6 md:p-8 max-w-md w-full mx-4 relative shadow-2xl">
+            <!-- Close Button -->
+            <button id="closePopup" class="absolute top-3 right-3 text-accent/70 hover:text-secondary text-xl">
+                <i class="fa fa-times"></i>
+            </button>
+
+            <div class="text-center mb-4">
+                <div class="text-secondary text-5xl mb-3">
+                    <i class="fa fa-infinity"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-2">Join Saucy Music Blog</h3>
+                <p class="text-accent/70 text-sm">Get exclusive updates, early access to giveaways, and the latest music news straight to your inbox — 100% free!</p>
+            </div>
+
+            <form id="popupForm" class="space-y-3">
+                <input type="email" placeholder="Enter your email address" class="w-full px-4 py-3 bg-accent/5 border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent">
+                <button type="submit" class="w-full subscribe-btn">
+                    SUBSCRIBE NOW
+                </button>
+                <p class="text-xs text-center text-accent/50">No spam, unsubscribe anytime.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-primary/90 backdrop-blur-sm z-50 border-b border-secondary/30">
+        <div class="container mx-auto flex justify-between items-center py-4 px-4">
+            <!-- Logo: Infinity Sign -->
+            <div class="flex items-center gap-2">
+                <div class="text-secondary text-4xl font-bold">
+                    <i class="fa fa-infinity" aria-hidden="true"></i>
+                </div>
+                <span class="text-accent text-xl font-bold">Saucy Music Blog</span>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex gap-8 items-center">
+                <a href="#home" class="hover:text-secondary transition-colors">Home</a>
+                <a href="#blog" class="hover:text-secondary transition-colors">Blog</a>
+                <a href="#feature-artist" class="hover:text-secondary transition-colors">Feature Your Music</a>
+                <a href="#giveaways" class="hover:text-secondary transition-colors">Free Giveaways</a>
+                <a href="#about" class="hover:text-secondary transition-colors">About Us</a>
+                <a href="#forms" class="hover:text-secondary transition-colors">Services & Forms</a>
+                <a href="#contact" class="hover:text-secondary transition-colors">Contact</a>
+                <!-- ✅ SUBSCRIBE BUTTON IN NAV -->
+                <button id="navSubscribeBtn" class="subscribe-btn text-sm px-4 py-2">
+                    <i class="fa fa-envelope mr-2"></i> SUBSCRIBE
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="md:hidden text-accent text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-primary/95 border-t border-secondary/20 px-4 py-3">
+            <div class="flex flex-col gap-3">
+                <a href="#home" class="py-2 hover:text-secondary transition-colors">Home</a>
+                <a href="#blog" class="py-2 hover:text-secondary transition-colors">Blog</a>
+                <a href="#feature-artist" class="py-2 hover:text-secondary transition-colors">Feature Your Music</a>
+                <a href="#giveaways" class="py-2 hover:text-secondary transition-colors">Free Giveaways</a>
+                <a href="#about" class="py-2 hover:text-secondary transition-colors">About Us</a>
+                <a href="#forms" class="py-2 hover:text-secondary transition-colors">Services & Forms</a>
+                <a href="#contact" class="py-2 hover:text-secondary transition-colors">Contact</a>
+                <!-- ✅ SUBSCRIBE BUTTON IN MOBILE MENU -->
+                <button id="mobileSubscribeBtn" class="subscribe-btn w-full mt-2">
+                    <i class="fa fa-envelope mr-2"></i> SUBSCRIBE
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20"></div>
+        <div class="container mx-auto text-center relative z-10 px-4">
+            <h1 class="text-[clamp(2.5rem,6vw,5rem)] font-bold text-shadow mb-4">
+                <span class="text-secondary">Saucy</span> Music Blog
+            </h1>
+            <p class="text-[clamp(1rem,2vw,1.25rem)] max-w-3xl mx-auto mb-8 text-accent/90">
+                Your ultimate hub for music news, artist spotlights, reviews, and exclusive free giveaways. Discover new sounds, get featured, and grow with us!
+            </p>
+            <div class="flex flex-wrap gap-4 justify-center">
+                <a href="#feature-artist" class="bg-secondary hover:bg-secondary/90 text-accent px-8 py-3 rounded-md font-semibold transition-all transform hover:scale-105">
+                    Get Featured
+                </a>
+                <a href="#giveaways" class="bg-accent hover:bg-accent/90 text-primary px-8 py-3 rounded-md font-semibold transition-all transform hover:scale-105">
+                    Claim Free Giveaways
+                </a>
+                <!-- ✅ BIG SUBSCRIBE BUTTON IN HERO -->
+                <button id="heroSubscribeBtn" class="subscribe-btn px-8 py-3 text-lg">
+                    <i class="fa fa-envelope mr-2"></i> SUBSCRIBE NOW
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Artists Section -->
+    <section id="feature-artist" class="section-padding bg-gradient-to-b from-primary to-primary/95">
+        <div class="container mx-auto">
+            <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-center mb-12">
+                <span class="text-secondary">Feature</span> Your Music
+            </h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-2xl font-semibold mb-4">Why Get Featured On Saucy Music Blog?</h3>
+                    <ul class="space-y-3 mb-6">
+                        <li class="flex items-start gap-3">
+                            <i class="fa fa-check-circle text-secondary mt-1"></i>
+                            <span>Reach thousands of music lovers and industry professionals</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa fa-check-circle text-secondary mt-1"></i>
+                            <span>Professional reviews, interviews, and dedicated artist profiles</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa fa-check-circle text-secondary mt-1"></i>
+                            <span>Social media promotion across all our platforms</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa fa-check-circle text-secondary mt-1"></i>
+                            <span>Completely free basic features — premium options available</span>
+                        </li>
+                    </ul>
+                    <a href="#placement-form" class="bg-secondary hover:bg-secondary/90 text-accent px-6 py-3 rounded-md inline-block transition-all mr-3 mb-3">
+                        Submit Your Music Now
+                    </a>
+                    <!-- ✅ SUBSCRIBE BUTTON HERE -->
+                    <button class="subscribe-btn-outline" onclick="openPopup()">
+                        <i class="fa fa-envelope mr-2"></i> Subscribe for Updates
+                    </button>
+                </div>
+                <div class="bg-accent/5 border border-secondary/20 rounded-lg p-6">
+                    <h4 class="text-xl font-semibold mb-4 text-center">Featured Artists This Month</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full bg-accent/10 mx-auto mb-2 overflow-hidden">
+                                <img src="https://picsum.photos/id/1012/200/200" alt="Artist" class="w-full h-full object-cover">
+                            </div>
+                            <p class="font-medium">Nova Vibes</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full bg-accent/10 mx-auto mb-2 overflow-hidden">
+                                <img src="https://picsum.photos/id/1027/200/200" alt="Artist" class="w-full h-full object-cover">
+                            </div>
+                            <p class="font-medium">Kulture Soul</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full bg-accent/10 mx-auto mb-2 overflow-hidden">
+                                <img src="https://picsum.photos/id/1035/200/200" alt="Artist" class="w-full h-full object-cover">
+                            </div>
+                            <p class="font-medium">Beat Master Z</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-24 h-24 rounded-full bg-accent/10 mx-auto mb-2 overflow-hidden">
+                                <img src="https://picsum.photos/id/1040/200/200" alt="Artist" class="w-full h-full object-cover">
+                            </div>
+                            <p class="font-medium">Luna Melodies</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Free Giveaways Section -->
+    <section id="giveaways" class="section-padding bg-primary/90">
+        <div class="container mx-auto">
+            <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-center mb-4">
+                Free <span class="text-secondary">Giveaways</span>
+            </h2>
+            <p class="text-center text-accent/80 max-w-2xl mx-auto mb-12">
+                We love giving back to our community! Enter to win free music production tools, merch, concert tickets, studio time, and exclusive music packs.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Giveaway Item 1 -->
+                <div class="bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:border-secondary/50 transition-all group">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Music Production Pack" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold mb-2">Free Production Kit</h3>
+                        <p class="text-accent/70 text-sm mb-4">Premium drum samples, loops, and presets worth R500 — 100% free for all subscribers.</p>
+                        <button class="w-full subscribe-btn">
+                            SUBSCRIBE & DOWNLOAD
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Giveaway Item 2 -->
+                <div class="bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:border-secondary/50 transition-all group">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Concert Tickets" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold mb-2">Concert Ticket Giveaway</h3>
+                        <p class="text-accent/70 text-sm mb-4">Win 2 VIP tickets to the biggest music event in Johannesburg — plus backstage access!</p>
+                        <button class="w-full subscribe-btn">
+                            SUBSCRIBE TO ENTER
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Giveaway Item 3 -->
+                <div class="bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:border-secondary/50 transition-all group">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1524230659092-071c12699b76?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Studio Time" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold mb-2">Free Studio Session</h3>
+                        <p class="text-accent/70 text-sm mb-4">Win a 4-hour recording session at a top Johannesburg studio with an engineer included.</p>
+                        <button class="w-full subscribe-btn">
+                            SUBSCRIBE & WIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section - WITH SEARCH, FILTERS & COMMENTS -->
+    <section id="blog" class="section-padding bg-gradient-to-b from-primary/95 to-primary">
+        <div class="container mx-auto">
+            <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-center mb-6">
+                Latest <span class="text-secondary">From The Blog</span>
+            </h2>
+
+            <!-- Search Bar -->
+            <div class="max-w-lg mx-auto mb-8">
+                <div class="relative">
+                    <input type="text" id="blogSearch" placeholder="Search articles..." class="w-full px-5 py-3 bg-accent/5 border border-secondary/30 rounded-full focus:outline-none focus:border-secondary text-accent pl-12">
+                    <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-accent/60"></i>
+                </div>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="flex flex-wrap justify-center gap-3 mb-12">
+                <button class="filter-btn filter-btn-active px-5 py-2 rounded-full border border-secondary transition-all" data-category="all">All</button>
+                <button class="filter-btn px-5 py-2 rounded-full border border-secondary transition-all" data-category="industry">Music Industry</button>
+                <button class="filter-btn px-5 py-2 rounded-full border border-secondary transition-all" data-category="reviews">Reviews</button>
+                <button class="filter-btn px-5 py-2 rounded-full border border-secondary transition-all" data-category="production">Production</button>
+                <button class="filter-btn px-5 py-2 rounded-full border border-secondary transition-all" data-category="news">News</button>
+                <!-- ✅ SUBSCRIBE BUTTON IN FILTER AREA -->
+                <button class="subscribe-btn text-sm px-4 py-2 rounded-full" onclick="openPopup()">
+                    <i class="fa fa-envelope mr-1"></i> Subscribe
+                </button>
+            </div>
+
+            <!-- Blog Posts Grid -->
+            <div id="blogPosts" class="grid md:grid-cols-3 gap-8">
+                <!-- Blog Post 1 -->
+                <div class="blog-post bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:transform hover:-translate-y-2 transition-all duration-300" data-category="industry" data-title="5 Ways Independent Artists Can Grow Their Fanbase">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Music Industry Tips" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="text-sm text-secondary mb-2">Music Industry • 12 June 2026</div>
+                        <h3 class="text-xl font-semibold mb-2">5 Ways Independent Artists Can Grow Their Fanbase</h3>
+                        <p class="text-accent/70 text-sm mb-4">Practical tips to build your audience without a big record label budget.</p>
+                        <a href="#" class="text-secondary hover:underline inline-flex items-center mb-3">
+                            Read More <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <!-- ✅ SUBSCRIBE BUTTON UNDER POST -->
+                        <button class="subscribe-btn-outline text-sm px-3 py-1 w-full" onclick="openPopup()">
+                            Subscribe for more tips
+                        </button>
+
+                        <!-- Comment Section -->
+                        <div class="mt-6 pt-4 border-t border-secondary/20">
+                            <h4 class="text-sm font-semibold mb-2">Comments (2)</h4>
+                            <div class="space-y-3 mb-4">
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Mike T.</p>
+                                    <p class="text-xs text-accent/70">Great tips, very helpful!</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Lila K.</p>
+                                    <p class="text-xs text-accent/70">Thanks for sharing this, exactly what I needed.</p>
+                                </div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Your name" class="w-full text-sm px-3 py-2 mb-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent">
+                                <textarea placeholder="Add a comment..." rows="2" class="w-full text-sm px-3 py-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent"></textarea>
+                                <button type="submit" class="mt-2 text-xs bg-secondary/80 hover:bg-secondary px-3 py-1 rounded">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 2 -->
+                <div class="blog-post bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:transform hover:-translate-y-2 transition-all duration-300" data-category="reviews" data-title="Album Review: The Sound of Summer 2026">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1507838153414-b4b713384a76?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="New Album Review" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="text-sm text-secondary mb-2">Reviews • 10 June 2026</div>
+                        <h3 class="text-xl font-semibold mb-2">Album Review: The Sound of Summer 2026</h3>
+                        <p class="text-accent/70 text-sm mb-4">Our take on the hottest releases dropping this season — who's leading the charts?</p>
+                        <a href="#" class="text-secondary hover:underline inline-flex items-center mb-3">
+                            Read More <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <button class="subscribe-btn-outline text-sm px-3 py-1 w-full" onclick="openPopup()">
+                            Subscribe for reviews
+                        </button>
+
+                        <!-- Comment Section -->
+                        <div class="mt-6 pt-4 border-t border-secondary/20">
+                            <h4 class="text-sm font-semibold mb-2">Comments (1)</h4>
+                            <div class="space-y-3 mb-4">
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Zara M.</p>
+                                    <p class="text-xs text-accent/70">Totally agree — this album is a masterpiece!</p>
+                                </div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Your name" class="w-full text-sm px-3 py-2 mb-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent">
+                                <textarea placeholder="Add a comment..." rows="2" class="w-full text-sm px-3 py-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent"></textarea>
+                                <button type="submit" class="mt-2 text-xs bg-secondary/80 hover:bg-secondary px-3 py-1 rounded">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 3 -->
+                <div class="blog-post bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:transform hover:-translate-y-2 transition-all duration-300" data-category="production" data-title="How to Make Beats That Stand Out">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1487215078519-e21cc028cb29?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Music Production" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="text-sm text-secondary mb-2">Production • 8 June 2026</div>
+                        <h3 class="text-xl font-semibold mb-2">How to Make Beats That Stand Out</h3>
+                        <p class="text-accent/70 text-sm mb-4">Key techniques to add uniqueness to your sound and get noticed by listeners.</p>
+                        <a href="#" class="text-secondary hover:underline inline-flex items-center mb-3">
+                            Read More <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <button class="subscribe-btn-outline text-sm px-3 py-1 w-full" onclick="openPopup()">
+                            Subscribe for tutorials
+                        </button>
+
+                        <!-- Comment Section -->
+                        <div class="mt-6 pt-4 border-t border-secondary/20">
+                            <h4 class="text-sm font-semibold mb-2">Comments (0)</h4>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Your name" class="w-full text-sm px-3 py-2 mb-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent">
+                                <textarea placeholder="Add the first comment..." rows="2" class="w-full text-sm px-3 py-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent"></textarea>
+                                <button type="submit" class="mt-2 text-xs bg-secondary/80 hover:bg-secondary px-3 py-1 rounded">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 4 -->
+                <div class="blog-post bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:transform hover:-translate-y-2 transition-all duration-300" data-category="news" data-title="New Music Festival Coming to Johannesburg 2026">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Music Festival" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="text-sm text-secondary mb-2">News • 5 June 2026</div>
+                        <h3 class="text-xl font-semibold mb-2">New Music Festival Coming to Johannesburg 2026</h3>
+                        <p class="text-accent/70 text-sm mb-4">Everything you need to know about the biggest music event of the year — dates, lineup, tickets.</p>
+                        <a href="#" class="text-secondary hover:underline inline-flex items-center mb-3">
+                            Read More <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <button class="subscribe-btn-outline text-sm px-3 py-1 w-full" onclick="openPopup()">
+                            Subscribe for news
+                        </button>
+
+                        <!-- Comment Section -->
+                        <div class="mt-6 pt-4 border-t border-secondary/20">
+                            <h4 class="text-sm font-semibold mb-2">Comments (3)</h4>
+                            <div class="space-y-3 mb-4">
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Thabo M.</p>
+                                    <p class="text-xs text-accent/70">Can't wait! This is going to be huge.</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Sarah J.</p>
+                                    <p class="text-xs text-accent/70">When do tickets go on sale?</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Kabelo N.</p>
+                                    <p class="text-xs text-accent/70">Hope my favorite artists are on the lineup!</p>
+                                </div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Your name" class="w-full text-sm px-3 py-2 mb-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent">
+                                <textarea placeholder="Add a comment..." rows="2" class="w-full text-sm px-3 py-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent"></textarea>
+                                <button type="submit" class="mt-2 text-xs bg-secondary/80 hover:bg-secondary px-3 py-1 rounded">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 5 -->
+                <div class="blog-post bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:transform hover:-translate-y-2 transition-all duration-300" data-category="industry" data-title="How to Submit Your Music to Blogs & Playlists">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1514525253440-b393452e8d4a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Music Submission" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="text-sm text-secondary mb-2">Music Industry • 1 June 2026</div>
+                        <h3 class="text-xl font-semibold mb-2">How to Submit Your Music to Blogs & Playlists</h3>
+                        <p class="text-accent/70 text-sm mb-4">Step-by-step guide to getting your music heard by curators and blogs like us.</p>
+                        <a href="#" class="text-secondary hover:underline inline-flex items-center mb-3">
+                            Read More <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <button class="subscribe-btn-outline text-sm px-3 py-1 w-full" onclick="openPopup()">
+                            Subscribe for guides
+                        </button>
+
+                        <!-- Comment Section -->
+                        <div class="mt-6 pt-4 border-t border-secondary/20">
+                            <h4 class="text-sm font-semibold mb-2">Comments (2)</h4>
+                            <div class="space-y-3 mb-4">
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Bongani D.</p>
+                                    <p class="text-xs text-accent/70">Very clear guide — thank you!</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Chloe R.</p>
+                                    <p class="text-xs text-accent/70">Finally someone explains this simply.</p>
+                                </div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Your name" class="w-full text-sm px-3 py-2 mb-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent">
+                                <textarea placeholder="Add a comment..." rows="2" class="w-full text-sm px-3 py-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent"></textarea>
+                                <button type="submit" class="mt-2 text-xs bg-secondary/80 hover:bg-secondary px-3 py-1 rounded">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 6 -->
+                <div class="blog-post bg-accent/5 border border-secondary/20 rounded-lg overflow-hidden hover:transform hover:-translate-y-2 transition-all duration-300" data-category="reviews" data-title="EP Review: Rising Stars of SA Music">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="EP Review" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="text-sm text-secondary mb-2">Reviews • 28 May 2026</div>
+                        <h3 class="text-xl font-semibold mb-2">EP Review: Rising Stars of SA Music</h3>
+                        <p class="text-accent/70 text-sm mb-4">We check out new projects from South Africa's most promising emerging artists.</p>
+                        <a href="#" class="text-secondary hover:underline inline-flex items-center mb-3">
+                            Read More <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <button class="subscribe-btn-outline text-sm px-3 py-1 w-full" onclick="openPopup()">
+                            Subscribe for reviews
+                        </button>
+
+                        <!-- Comment Section -->
+                        <div class="mt-6 pt-4 border-t border-secondary/20">
+                            <h4 class="text-sm font-semibold mb-2">Comments (4)</h4>
+                            <div class="space-y-3 mb-4">
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Lesedi M.</p>
+                                    <p class="text-xs text-accent/70">Love seeing local talent getting spotlight!</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Jason K.</p>
+                                    <p class="text-xs text-accent/70">Great review, I'll definitely listen.</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Nomsa T.</p>
+                                    <p class="text-xs text-accent/70">SA music is on another level right now.</p>
+                                </div>
+                                <div class="bg-accent/5 p-3 rounded">
+                                    <p class="text-sm font-medium">Peter L.</p>
+                                    <p class="text-xs text-accent/70">Keep supporting our artists please!</p>
+                                </div>
+                            </div>
+                            <form class="comment-form">
+                                <input type="text" placeholder="Your name" class="w-full text-sm px-3 py-2 mb-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent">
+                                <textarea placeholder="Add a comment..." rows="2" class="w-full text-sm px-3 py-2 bg-primary border border-secondary/30 rounded focus:outline-none focus:border-secondary text-accent"></textarea>
+                                <button type="submit" class="mt-2 text-xs bg-secondary/80 hover:bg-secondary px-3 py-1 rounded">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12">
+                <a href="#" class="border-2 border-secondary text-secondary hover:bg-secondary/10 px-8 py-3 rounded-md font-semibold transition-all mr-3 mb-3">
+                    View All Posts
+                </a>
+                <!-- ✅ SUBSCRIBE BUTTON AT BOTTOM OF BLOG -->
+                <button class="subscribe-btn px-8 py-3" onclick="openPopup()">
+                    <i class="fa fa-envelope mr-2"></i> SUBSCRIBE TO BLOG
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Forms Section: Placement, Investing, Sponsorship -->
+    <section id="forms" class="section-padding bg-primary/90">
+        <div class="container mx-auto">
+            <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-center mb-4">
+                Work With <span class="text-secondary">Saucy Music Blog</span>
+            </h2>
+            <p class="text-center text-accent/80 max-w-2xl mx-auto mb-12">
+                Whether you want placement, partnership, investment, or sponsorship — we have options for everyone. Fill out the form below and we'll get back to you within 48 hours.
+            </p>
+
+            <div class="max-w-3xl mx-auto bg-accent/5 border border-secondary/20 rounded-lg p-6 md:p-8">
+                <form id="placement-form" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block mb-2 text-sm font-medium">Full Name / Artist Name</label>
+                            <input type="text" class="w-full px-4 py-3 bg-primary border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent" placeholder="Your name or brand">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-medium">Email Address</label>
+                            <input type="email" class="w-full px-4 py-3 bg-primary border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent" placeholder="your@email.com">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Type of Request</label>
+                        <select class="w-full px-4 py-3 bg-primary border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent">
+                            <option value="">Select an option</option>
+                            <option value="placement">Artist Placement / Feature</option>
+                            <option value="sponsorship">Sponsorship & Partnership</option>
+                            <option value="investing">Investment Opportunity</option>
+                            <option value="advertising">Advertising & Promotion</option>
+                            <option value="collaboration">Content Collaboration</option>
+                            <option value="other">Other Inquiry</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Brief Description</label>
+                        <textarea rows="5" class="w-full px-4 py-3 bg-primary border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent" placeholder="Tell us about your project, goals, or what you need from us..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm font-medium">Links (Music, Website, Socials)</label>
+                        <input type="text" class="w-full px-4 py-3 bg-primary border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent" placeholder="SoundCloud, Spotify, Instagram, etc.">
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="bg-secondary hover:bg-secondary/90 text-accent px-8 py-3 rounded-md font-semibold transition-all w-full md:w-auto">
+                            Submit Request
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="bg-secondary/10 border-y border-secondary/20 py-12">
+        <div class="container mx-auto text-center px-4">
+            <h2 class="text-2xl md:text-3xl font-bold mb-4">Join Our Music Community</h2>
+            <p class="max-w-2xl mx-auto mb-6 text-accent/80">Get exclusive updates, early access to giveaways, and music news straight to your inbox.</p>
+            <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <input type="email" id="ctaEmail" class="flex-1 px-4 py-3 bg-primary border border-secondary/30 rounded-md focus:outline-none focus:border-secondary text-accent" placeholder="Enter your email">
+                <button id="ctaSubscribeBtn" class="subscribe-btn whitespace-nowrap">
+                    <i class="fa fa-envelope mr-2"></i> SUBSCRIBE
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ✅ ABOUT US SECTION -->
+    <section id="about" class="section-padding bg-gradient-to-b from-primary to-primary/95">
+        <div class="container mx-auto">
+            <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-bold text-center mb-12">
+                About <span class="text-secondary">Saucy Music Blog</span>
+            </h2>
+
+            <div class="max-w-4xl mx-auto space-y-8 text-accent/80">
+                <div>
+                    <h3 class="text-xl font-semibold text-accent mb-3">Who We Are</h3>
+                    <p>Founded in Johannesburg, South Africa, Saucy Music Blog is more than just a music website — we are a vibrant community, a discovery hub, and a platform built for artists, fans, and music lovers alike. Born from a deep love for sound, rhythm, and creativity, our mission is simple: to shine a spotlight on incredible music, from established stars to the most promising emerging talent right here at home and across the globe.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-accent mb-3">Our Story</h3>
+                    <p>What started as a passion project — sharing new tracks and writing reviews from a small room in Jozi — has grown into one of the go-to spaces for everything music. We noticed that so many amazing artists, especially in South Africa, were making world-class music but struggling to get the visibility they deserve. So, we built a space where talent meets opportunity. We believe that every great song deserves to be heard, and every artist deserves a chance to grow.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-accent mb-3">What We Do</h3>
+                    <ul class="list-disc list-inside space-y-2 pl-2">
+                        <li><span class="text-accent font-medium">Honest Reviews & Features:</span> Deep dives into albums, EPs, and singles, plus exclusive interviews and artist spotlights.</li>
+                        <li><span class="text-accent font-medium">Music News & Updates:</span> Everything happening in the industry — festivals, releases, trends, and opportunities.</li>
+                        <li><span class="text-accent font-medium">Exclusive Giveaways:</span> Free music tools, concert tickets, studio time, and merch to give back to our amazing community.</li>
+                        <li><span class="text-accent font-medium">Artist Support:</span> Free and premium placement services, helping musicians get featured, promoted, and connected to new fans.</li>
+                        <li><span class="text-accent font-medium">Tips & Guides:</span> Practical advice on production, marketing, and navigating the music industry.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-accent mb-3">Our Vision</h3>
+                    <p>We want to build a world where talent is the only currency that matters. Whether it's Amapiano, Hip-Hop, R&B, Gqom, Soul, or any other genre — we celebrate all sounds that move people. We are proudly South African, proudly African, and proudly global. We are here to amplify voices, break boundaries, and keep the music playing.</p>
+                </div>
+
+                <div>
+                    <h3 class="text-xl font-semibold text-accent mb-3">Join The Movement</h3>
+                    <p>This isn't just our blog — it's yours. Whether you're an artist looking for a stage, a fan looking for your next favorite song, or someone who just loves good music — you belong here. Let's grow, discover, and celebrate music together.</p>
+                    <p class="text-center text-secondary font-semibold italic mt-6 text-lg">"Endless sound, endless talent — Saucy Music Blog."</p>
+                    <!-- ✅ SUBSCRIBE BUTTON IN ABOUT SECTION -->
+                    <div class="text-center mt-8">
+                        <button class="subscribe-btn px-8 py-3" onclick="openPopup()">
+                            <i class="fa fa-envelope mr-2"></i> SUBSCRIBE TO OUR COMMUNITY
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - WITH DISCLAIMER, T&C, SOCIALS, COPYRIGHT -->
+    <footer id="contact" class="bg-primary border-t border-secondary/30 py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="text-secondary text-3xl">
+                            <i class="fa fa-infinity" aria-hidden="true"></i>
+                        </div>
+                        <span class="text-accent text-lg font-bold">Saucy Music Blog</span>
+                    </div>
+                    <p class="text-accent/70 text-sm">Your endless source of music discovery, artist support, and exclusive content.</p>
+                    <!-- ✅ SUBSCRIBE BUTTON IN FOOTER -->
+                    <button class="subscribe-btn text-sm px-4 py-2 mt-3" onclick="openPopup()">
+                        <i class="fa fa-envelope mr-1"></i> Subscribe
+                    </button>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3 text-secondary">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#home" class="text-accent/70 hover:text-secondary transition-colors">Home</a></li>
+                        <li><a href="#blog" class="text-accent/70 hover:text-secondary transition-colors">Blog</a></li>
+                        <li><a href="#feature-artist" class="text-accent/70 hover:text-secondary transition-colors">Get Featured</a></li>
+                        <li><a href="#giveaways" class="text-accent/70 hover:text-secondary transition-colors">Giveaways</a></li>
+                        <li><a href="#about" class="text-accent/70 hover:text-secondary transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3 text-secondary">Services</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#forms" class="text-accent/70 hover:text-secondary transition-colors">Artist Placement</a></li>
+                        <li><a href="#forms" class="text-accent/70 hover:text-secondary transition-colors">Sponsorship</a></li>
+                        <li><a href="#forms" class="text-accent/70 hover:text-secondary transition-colors">Investing</a></li>
+                        <li><a href="#forms" class="text-accent/70 hover:text-secondary transition-colors">Advertising</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-3 text-secondary">Follow Us</h4>
+                    <div class="flex gap-3 mb-4">
+                        <a href="#" class="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center hover:bg-secondary transition-colors" aria-label="Instagram">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center hover:bg-secondary transition-colors" aria-label="Twitter">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center hover:bg-secondary transition-colors" aria-label="YouTube">
+                            <i class="fa fa-youtube"></i>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center hover:bg-secondary transition-colors" aria-label="TikTok">
+                            <i class="fa fa-music"></i>
+                        </a>
+                    </div>
+                    <p class="text-xs text-accent/70">🎵 Endless sound, endless talent</p>
+                </div>
+            </div>
+
+            <hr class="border-secondary/30 mb-6">
+
+            <div class="grid md:grid-cols-3 gap-6 text-center md:text-left text-sm text-accent/70">
+                <div>
+                    <p>© 2026 Saucy Music Blog. All rights reserved.</p>
+                </div>
+                <div class="flex gap-4 justify-center md:justify-start">
+                    <a href="#" class="hover:text-secondary transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-secondary transition-colors">Terms & Conditions</a>
+                </div>
+                <div class="text-right">
+                    <p>Made with <span class="text-secondary">❤</span> for music lovers worldwide</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ✅ POPUP FUNCTIONALITY
+        function openPopup() {
+            document.getElementById('newsletterPopup').classList.remove('hidden');
+        }
+
+        function closePopup() {
+            document.getElementById('newsletterPopup').classList.add('hidden');
+        }
+
+        document.getElementById('closePopup').addEventListener('click', closePopup);
+
+        // Close popup when clicking outside
+        document.getElementById('newsletterPopup').addEventListener('click', function(e) {
+            if (e.target === this) closePopup();
+        });
+
+        // Subscribe buttons - open popup
+        document.getElementById('navSubscribeBtn')?.addEventListener('click', openPopup);
+        document.getElementById('mobileSubscribeBtn')?.addEventListener('click', openPopup);
+        document.getElementById('heroSubscribeBtn')?.addEventListener('click', openPopup);
+        document.getElementById('ctaSubscribeBtn')?.addEventListener('click', openPopup);
+
+        // ✅ BLOG SEARCH & FILTER
+        const blogSearch = document.getElementById('blogSearch');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const blogPosts = document.querySelectorAll('.blog-post');
+
+        let activeCategory = 'all';
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('filter-btn-active'));
+                this.classList.add('filter-btn-active');
+                activeCategory = this.getAttribute('data-category');
+                filterPosts();
+            });
+        });
+
+        blogSearch?.addEventListener('input', function() {
+            filterPosts();
+        });
+
+        function filterPosts() {
+            const searchTerm = blogSearch?.value.toLowerCase() || '';
+            
+            blogPosts.forEach(post => {
+                const category = post.getAttribute('data-category');
+                const title = post.getAttribute('data-title').toLowerCase();
+                const matchesCategory = activeCategory === 'all' || category === activeCategory;
+                const matchesSearch = title.includes(searchTerm);
+
+                if (matchesCategory && matchesSearch) {
+                    post.style.display = '';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        // ✅ MOBILE MENU TOGGLE
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn?.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // ✅ FORM SUBMISSION (Demo)
+        document.getElementById('popupForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for subscribing! Check your email for confirmation.');
+            closePopup();
+            this.reset();
+        });
+
+        document.getElementById('placement-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your submission! We\'ll review it and get back to you within 48 hours.');
+            this.reset();
+        });
+
+        // ✅ COMMENT FORM HANDLING
+        document.querySelectorAll('.comment-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Thank you for your comment! It will appear after moderation.');
+                this.reset();
+            });
+        });
+    </script>
+
+</body>
+</html>
